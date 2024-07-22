@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from typing import List
-from common.database.models import Author
+from ..database.models import Author
 from schemas.author import AuthorSchema
 
 def get_authors(db: Session) -> List[Author]:
@@ -10,6 +10,13 @@ def get_authors(db: Session) -> List[Author]:
 
 def get_author_by_id(db: Session, author_id: int) -> Author:
     return db.query(Author).filter(Author.author_id == author_id).first()
+
+def get_author_id_by_name(db: Session, author_name: str) -> Author:
+    author = db.query(Author).filter(Author.name == author_name).first()
+    if author:
+        print(author)
+        return author.author_id
+    return None
 
 def create_author(db: Session, author: AuthorSchema) -> Author:
     
