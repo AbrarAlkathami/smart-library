@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from typing import List
-from ..database.models import Author
+from ..database.models import Author , Book
 from schemas.author import AuthorSchema
 
 def get_authors(db: Session) -> List[Author]:
@@ -57,3 +57,12 @@ def delete_author(db: Session, author_id: int) -> None:
     
     db.delete(db_author)
     db.commit()
+
+def associate_book_with_author(db: Session, book: Book, author: Author):
+    if author not in book.authors:
+        book.authors.append(author)
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=409, detail="Association already exists")

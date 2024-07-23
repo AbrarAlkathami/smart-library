@@ -12,10 +12,7 @@ def get_book_by_id(db: Session, book_id: int):
     return db.query(Book).filter(Book.book_id == book_id).first()
 
 def create_book(db: Session, book: BookSchema):
-    db_author = db.query(Author).filter(Author.author_id == book.author_id).first()
-    if not db_author:
-        raise HTTPException(status_code=400, detail="Author not found")
-    
+
     db_book = Book(**book.dict())
     try:
             db.add(db_book)

@@ -6,6 +6,7 @@ from schemas.book import BookSchema
 from middleware.auth import get_current_user, admin_required
 from middleware.logger import log_user_activity
 from common.CRUD.book_crud import *
+from common.database.chromaDB import*
 
 router = APIRouter()
 
@@ -44,3 +45,12 @@ def get_recommended_books_route(db: Session = Depends(get_db), current_user: dic
         return get_recommended_books(db, current_user["username"])
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+# store_books_in_vectorDB()
+@router.get("/books/search/")
+def get_book_similarity(user_query: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    similarity_text_result = similarity_text(user_query)
+    if not similarity_text_result:
+        raise HTTPException(status_code=404, detail="No similar books found.")
+    log_user_activity(db, current_user['username'], f"Searched for book with query: {user_query}")
+    return {"results": similarity_text_result}

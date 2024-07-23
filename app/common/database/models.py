@@ -1,7 +1,16 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
+from sqlalchemy.orm import relationship , Mapped , mapped_column 
+from typing import List
 from datetime import datetime
-from common.database.database import Base
+from common.database.database import Base ,engine
+
+
+author_association_table = Table(
+    "author_association_table",
+    Base.metadata,
+    Column("author_id", ForeignKey("authors.author_id"), primary_key=True),
+    Column("book_id", ForeignKey("books.book_id"), primary_key=True),
+)
 
 class User(Base):
     __tablename__ = "users"
@@ -36,19 +45,28 @@ class UserActivity(Base):
 class Author(Base):
     __tablename__ = "authors"
 
-    author_id = Column(Integer, primary_key=True, index=True , autoincrement=True)
+    author_id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     name = Column(String, index=True)
     biography = Column(String)
 
-    books = relationship("Book", back_populates="author", cascade="all, delete-orphan")
+    books: Mapped[List["Book"]] = relationship(
+        secondary=author_association_table,
+        back_populates="authors"  # Changed from 'book' to 'books'
+    )
 
 class Book(Base):
     __tablename__ = "books"
 
-    book_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    book_id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     title = Column(String, index=True)
-    author_id = Column(Integer, ForeignKey("authors.author_id"))
     genre = Column(String)
     description = Column(String)
 
-    author = relationship("Author", back_populates="books")
+    authors: Mapped[List["Author"]] = relationship(
+        secondary=author_association_table,
+        back_populates="books"  # Changed from 'author' to 'authors'
+    )
+
+
+Base.metadata.create_all(bind=engine)
+
