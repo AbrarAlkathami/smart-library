@@ -4,7 +4,7 @@ import chromadb
 from chromadb.config import DEFAULT_TENANT, DEFAULT_DATABASE, Settings
 
 client = chromadb.PersistentClient(
-    path="test",
+    path="/Users/aalkathami001/Desktop/3rd week/Mon/task2/app/books_vector_db",
     settings=Settings(),
     tenant=DEFAULT_TENANT,
     database=DEFAULT_DATABASE,
@@ -12,44 +12,36 @@ client = chromadb.PersistentClient(
 collection = client.get_or_create_collection(name="collection_name")
 
 def store_books_in_vectorDB():
-    # Check if the collection is empty before adding documents
-    existing_documents = collection.count()
-    if existing_documents > 0:
-        print("Collection already populated with documents.")
-        return "Documents already exist in the collection."
-
-    # Load the CSV file
-    df = pd.read_csv("cleaned_books.csv", usecols=['title', 'authors', 'categories', 'description'])
-
-    # Initialize the sentence transformer model
+    df = pd.read_csv("cleaned_books.csv", usecols=['title' , 'subtitle', 'authors', 'categories', 'published_year', 'description', 'average_rating', 'num_pages', 'ratings_count'])
     model = SentenceTransformer('all-MiniLM-L6-v2')
-
-    # Generate embeddings and prepare documents and IDs
     documents = []
     embeddings_list = []
     IDs = []
+
     for index, row in df.iterrows():
-        text = ' '.join(row.astype(str).values)
+        text = ' , '.join(row.astype(str).values)
         documents.append(text)
         embedding = model.encode(text).tolist()
         embeddings_list.append(embedding)
         IDs.append(str(index))
 
-    # Add documents and embeddings to the collection
     collection.add(
         documents=documents,
         embeddings=embeddings_list,
         ids=IDs
     )
+
     return "Documents added to the collection successfully."
 
-# Run this once to store documents in the collection
+
+
 def similarity_text(query_text : str):
     results = collection.query(
-        query_texts=query_text,
+        query_texts=[query_text],
         n_results=2
     )
     return results['documents']
+
 # print(similarity_text("what are the harry potter books?"))
 
 # chroma_client = chromadb.Client()
@@ -69,4 +61,3 @@ def similarity_text(query_text : str):
 #     n_results=2 # how many results to return
 # )
 # print(results)
-

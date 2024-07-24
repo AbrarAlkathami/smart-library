@@ -2,8 +2,9 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List
-from common.database.models import Book, Author, UserPreference
-from schemas.book import BookSchema
+from common.database.models import Book, Author, UserPreference , author_association_table
+from schemas.book import BookSchema 
+from common.CRUD.author_crud import *
 
 def get_books(db: Session):
     return db.query(Book).all()
@@ -11,16 +12,30 @@ def get_books(db: Session):
 def get_book_by_id(db: Session, book_id: int):
     return db.query(Book).filter(Book.book_id == book_id).first()
 
+def get_book_by_title(db: Session, title: str) -> Book:
+    return db.query(Book).filter(Book.title == title).first()
+
 def create_book(db: Session, book: BookSchema):
 
-    db_book = Book(**book.dict())
+    # Check if the book already exists based on published_year and genre
+    db_book = db.query(Book).filter(
+        Book.title == book.title,
+        Book.published_year == book.published_year,
+        Book.genre == book.genre
+    ).first()
+
+    if db_book:
+        return db_book  # Return existing book if found
+
+    # Create new book if not found
+    db_book = Book(**book.dict(exclude_unset=True))  # exclude_unset=True to ignore None values
     try:
-            db.add(db_book)
-            db.commit()
-            db.refresh(db_book)
+        db.add(db_book)
+        db.commit()
+        db.refresh(db_book)
     except IntegrityError:
-            db.rollback()
-            raise HTTPException(status_code=409, detail="Book already exists")
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Book already exists")
 
     return db_book
 
@@ -69,3 +84,28 @@ def get_recommended_books(db: Session, username: str) -> List[Book]:
         raise ValueError("No books found for preferred genres")
 
     return recommended_books
+
+
+def associate_book_with_author(db: Session, book_title: str, author_name: str):
+    # Retrieve the Book and Author instances
+    book = get_book_by_title(db, book_title)
+    author = get_author_by_name(db, author_name)
+
+    if not book:
+        raise ValueError(f"Book with title '{book_title}' not found.")
+
+    if not author:
+        raise ValueError(f"Author with name '{author_name}' not found.")
+
+    # Check if the association already exists
+    association_exists = db.query(author_association_table).filter_by(book_id=book.book_id, author_id=author.author_id).first()
+    if association_exists:
+        return  # Association already exists, do nothing
+
+    # Create a new association
+    db.execute(author_association_table.insert().values(book_id=book.book_id, author_id=author.author_id))
+    try:
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise e

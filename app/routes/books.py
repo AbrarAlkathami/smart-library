@@ -7,7 +7,7 @@ from middleware.auth import get_current_user, admin_required
 from middleware.logger import log_user_activity
 from common.CRUD.book_crud import *
 from common.database.chromaDB import*
-
+from services.ollama_model import *
 router = APIRouter()
 
 @router.get("/books", response_model=List[BookSchema], tags=["Books"], operation_id="get_books_list")
@@ -47,10 +47,18 @@ def get_recommended_books_route(db: Session = Depends(get_db), current_user: dic
         raise HTTPException(status_code=404, detail=str(e))
 
 # store_books_in_vectorDB()
-@router.get("/books/search/")
+@router.get("/books/search/{user_query}")
 def get_book_similarity(user_query: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     similarity_text_result = similarity_text(user_query)
     if not similarity_text_result:
         raise HTTPException(status_code=404, detail="No similar books found.")
     log_user_activity(db, current_user['username'], f"Searched for book with query: {user_query}")
     return {"results": similarity_text_result}
+
+
+
+# @router.get("/chat")
+# def chat_with_model( question: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+#     answer = retrieve_qa(question)
+#     log_user_activity(db, current_user['username'], f"Asked a question: {question}")
+#     return {"answer": answer}

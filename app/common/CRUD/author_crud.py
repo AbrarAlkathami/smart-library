@@ -11,12 +11,15 @@ def get_authors(db: Session) -> List[Author]:
 def get_author_by_id(db: Session, author_id: int) -> Author:
     return db.query(Author).filter(Author.author_id == author_id).first()
 
-def get_author_id_by_name(db: Session, author_name: str) -> Author:
-    author = db.query(Author).filter(Author.name == author_name).first()
-    if author:
-        print(author)
-        return author.author_id
-    return None
+# def get_author_id_by_name(db: Session, author_name: str) -> Author:
+#     author = db.query(Author).filter(Author.name == author_name).first()
+#     if author:
+#         print(author)
+#         return author.author_id
+#     return None
+
+def get_author_by_name(db: Session, author_name: str) -> Author:
+    return db.query(Author).filter(Author.name == author_name).first()
 
 def create_author(db: Session, author: AuthorSchema) -> Author:
     
@@ -58,11 +61,3 @@ def delete_author(db: Session, author_id: int) -> None:
     db.delete(db_author)
     db.commit()
 
-def associate_book_with_author(db: Session, book: Book, author: Author):
-    if author not in book.authors:
-        book.authors.append(author)
-        try:
-            db.commit()
-        except IntegrityError:
-            db.rollback()
-            raise HTTPException(status_code=409, detail="Association already exists")

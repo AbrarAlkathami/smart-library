@@ -20,6 +20,8 @@ langchain-chroma = "^0.1.2"
 langchain-community = "^0.2.9"
 langchain-huggingface = "^0.0.3"
 langchain-openai = "^0.1.17"
+langchain-mistralai = "^0.1.10"
+langchain-ollama = "^0.1.0"
 
 [tool.pytest.ini_options]
 pythonpath = [
