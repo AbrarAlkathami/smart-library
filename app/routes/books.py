@@ -49,7 +49,7 @@ def get_recommended_books_route(db: Session = Depends(get_db), current_user: dic
 # store_books_in_vectorDB()
 @router.get("/books/search/{user_query}")
 def get_book_similarity(user_query: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    similarity_text_result = similarity_text(user_query)
+    similarity_text_result = get_similarity(user_query)
     if not similarity_text_result:
         raise HTTPException(status_code=404, detail="No similar books found.")
     log_user_activity(db, current_user['username'], f"Searched for book with query: {user_query}")

@@ -9,38 +9,7 @@ client = chromadb.PersistentClient(
     tenant=DEFAULT_TENANT,
     database=DEFAULT_DATABASE,
 )
-collection = client.get_or_create_collection(name="collection_name")
-
-def store_books_in_vectorDB():
-    df = pd.read_csv("cleaned_books.csv", usecols=['title' , 'subtitle', 'authors', 'categories', 'published_year', 'description', 'average_rating', 'num_pages', 'ratings_count'])
-    model = SentenceTransformer('all-MiniLM-L6-v2')
-    documents = []
-    embeddings_list = []
-    IDs = []
-
-    for index, row in df.iterrows():
-        text = ' , '.join(row.astype(str).values)
-        documents.append(text)
-        embedding = model.encode(text).tolist()
-        embeddings_list.append(embedding)
-        IDs.append(str(index))
-
-    collection.add(
-        documents=documents,
-        embeddings=embeddings_list,
-        ids=IDs
-    )
-
-    return "Documents added to the collection successfully."
-
-
-
-def similarity_text(query_text : str):
-    results = collection.query(
-        query_texts=[query_text],
-        n_results=2
-    )
-    return results['documents']
+collection = client.get_or_create_collection(name="books_collection")
 
 # print(similarity_text("what are the harry potter books?"))
 

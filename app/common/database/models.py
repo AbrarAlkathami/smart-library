@@ -72,5 +72,3 @@ class Book(Base):
         back_populates="books"
     )
 
-
-Base.metadata.create_all(engine)

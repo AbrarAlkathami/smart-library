@@ -1,5 +1,6 @@
 from fastapi import FastAPI # type: ignore
 from routes import users, books, authors
+from common.database.database import *
 
 app = FastAPI()
 
@@ -14,3 +15,6 @@ def read_root():
 @app.get("/health_check")
 def health_check():
         return {"message": "API is running"}
+
+
+Base.metadata.create_all(engine)

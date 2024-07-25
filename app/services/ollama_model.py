@@ -23,44 +23,45 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.documents import Document
 # from common.database.chromaDB import similarity_text
 
-store = {}
+# store = {}
 
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-        if session_id not in store:
-            store[session_id] = InMemoryChatMessageHistory()
-        return store[session_id]
+# def get_session_history(session_id: str) -> BaseChatMessageHistory:
+#         if session_id not in store:
+#             store[session_id] = InMemoryChatMessageHistory()
+#         return store[session_id]
 
 
-# def retrieve_qa(query: str):
-model = OllamaLLM(model="mistral")
+# # def retrieve_qa(query: str):
+# model = OllamaLLM(model="mistral")
 
-prompt = ChatPromptTemplate.from_messages(
-[
-    (
-        "system",
-        "You're an assistant who speaks in {language}. Respond in 20 words or fewer",
-    ),
-    MessagesPlaceholder(variable_name="history"),
-    ("human", "{input}"),
-]
-)
+# prompt = ChatPromptTemplate.from_messages(
+# [
+#     (
+#         "system",
+#         "You're an assistant who speaks in {language}. Respond in 20 words or fewer",
+#     ),
+#     MessagesPlaceholder(variable_name="history"),
+#     ("human", "{input}"),
+# ]
+# )
 
-runnable = prompt | model
+# runnable = prompt | model
 
-runnable_with_history = RunnableWithMessageHistory(
-    runnable,
-    get_session_history,
-    input_messages_key="input",
-    history_messages_key="history",
-)
-for i in range(100):
-    query=input("Enter your question?")
-    response=runnable_with_history.invoke(
-    {"language": "Arabic", "input": {query}},
-    config={"configurable": {"session_id": "2"}},
-    )
-    print(response)
+# runnable_with_history = RunnableWithMessageHistory(
+#     runnable,
+#     get_session_history,
+#     input_messages_key="input",
+#     history_messages_key="history",
+# )
+# for i in range(100):
+#     query=input("Enter your question?")
+#     response=runnable_with_history.invoke(
+#     {"language": "Arabic", "input": {query}},
+#     config={"configurable": {"session_id": "2"}},
+#     )
+#     print(response)
 
+############################################################################
 
     # return response.content
 
