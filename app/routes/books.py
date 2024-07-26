@@ -24,9 +24,9 @@ def get_book_route(book_id: int, db: Session = Depends(get_db), current_user: di
     return book
 
 @router.post("/books", response_model=BookSchema, tags=["Books"], operation_id="create_book_record")
-def create_book_route(book: BookSchema, db: Session = Depends(get_db), current_user: dict = Depends(admin_required)):
+def create_book_route( authors: List[str], book: BookSchema, db: Session = Depends(get_db), current_user: dict = Depends(admin_required)):
     log_user_activity(db, current_user['username'], "Book creation")
-    return create_book(db, book)
+    return create_book(db, authors, book)
 
 @router.put("/books/{book_id}", response_model=BookSchema, tags=["Books"], operation_id="update_book_record")
 def update_book_route(book_id: int, book: BookSchema, db: Session = Depends(get_db), current_user: dict = Depends(admin_required)):

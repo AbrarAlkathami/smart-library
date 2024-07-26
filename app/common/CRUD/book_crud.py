@@ -16,25 +16,25 @@ def get_book_by_id(db: Session, book_id: int):
 def get_book_by_title(db: Session, title: str):
     return db.query(Book).filter(Book.title == title).first()
 
-def create_book(db: Session, book: BookSchema):
+def create_book(db: Session, authors: List[str] ,book: BookSchema):
     # Ensure the author exists in the database
     author_instances = []
 
     # Handle multiple authors
-    # for author_name in book.authors:
-        # author_instance = create_or_get_author(db, author_name)
-        # author_instances.append(author_instance)
+    for author_name in authors:
+        author_instance = create_or_get_author(db, author_name)
+        author_instances.append(author_instance)
 
     
     # Create the new book with the author instance
-    db_book = Book(**book.dict(exclude={"authors"}))  # Exclude authors as we'll handle it separately
-    # db_book.authors = author_instances
+    db_book = Book(**book.dict())  # Exclude authors as we'll handle it separately
+    
     
     try:
         db.add(db_book)
         db.commit()
         db.refresh(db_book)
-        add_book_chromadb(db_book.book_id, book)
+        add_book_chromadb(db_book.book_id, authors,book)
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=409, detail="Book already exists")

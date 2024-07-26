@@ -22,7 +22,7 @@ def process_csv(file_path: str, db: Session):
 
         # Create or retrieve the book
         book_data = BookSchema(title=title, subtitle=subtitle, genre=genre, published_year=published_year, description=description, average_rating=average_rating, num_pages=num_pages, ratings_count=ratings_count)
-        db_book = create_book(db, book_data)
+        db_book = create_book(db,author_names, book_data)
         
         # Create authors and associate them with the book
         for author_name in author_names:

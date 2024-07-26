@@ -1,0 +1,229 @@
+Yes, you can store the images as binary data (BLOB) in your database instead of storing just the URLs. This approach involves downloading the images from the provided URLs and then saving the image data in the database.
+
+Here's a step-by-step guide to update your code to store images as binary data:
+
+Install Required Libraries: You'll need requests to download the images and PIL (Python Imaging Library) to handle image processing. You can install them using:
+
+sh
+Copy code
+pip install requests pillow
+Update the Database Model: Modify your Book model to include a field for the image as binary data.
+
+Update the BookSchema: Add a field for image data.
+
+Modify the CSV Processing Function: Download the images and store the binary data in the database.
+
+Step 2: Update the Database Model
+Update your SQLAlchemy model to include a binary field for the image:
+
+python
+Copy code
+from sqlalchemy import Column, Integer, String, Float, Text, LargeBinary
+
+class Book(Base):
+    __tablename__ = 'books'
+
+    book_id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    subtitle = Column(String, nullable=True)
+    published_year = Column(Integer, nullable=True)
+    average_rating = Column(Float, nullable=True)
+    num_pages = Column(Integer, nullable=True)
+    ratings_count = Column(Integer, nullable=True)
+    genre = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    image_data = Column(LargeBinary, nullable=True)  # New field for storing image binary data
+Step 3: Update BookSchema
+Add a field for image data:
+
+python
+Copy code
+from pydantic import BaseModel
+from typing import Optional, List
+
+class BookSchema(BaseModel):
+    title: str
+    subtitle: Optional[str] = None
+    published_year: Optional[int] = None
+    average_rating: Optional[float] = None
+    num_pages: Optional[int] = None
+    ratings_count: Optional[int] = None
+    genre: Optional[str] = None
+    description: Optional[str] = None
+    image_data: Optional[bytes] = None  # New field for storing image binary data
+Step 4: Modify the CSV Processing Function
+Download the images and store the binary data in the database:
+
+python
+Copy code
+import pandas as pd
+import requests
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException
+from PIL import Image
+from io import BytesIO
+from common.CRUD.book_crud import *
+from common.CRUD.author_crud import *
+from common.database.database import session_local, get_db
+from schemas.author import AuthorSchema
+from schemas.book import BookSchema
+from sentence_transformers import SentenceTransformer
+
+def process_csv(file_path: str, db: Session):
+    df = pd.read_csv(file_path, usecols=['title', 'subtitle', 'authors', 'categories', 'published_year', 'description', 'average_rating', 'num_pages', 'ratings_count', 'image_url'])
+
+    for index, row in df.iterrows():
+        title = row['title']
+        subtitle = row['subtitle']
+        author_names = row['authors'].split(';')  
+        genre = row['categories']
+        published_year = row['published_year']
+        description = row['description']
+        average_rating = row['average_rating']
+        num_pages = row['num_pages']
+        ratings_count = row['ratings_count']
+        image_url = row['image_url']
+
+        # Download the image and store it as binary data
+        image_data = None
+        if image_url:
+            try:
+                response = requests.get(image_url)
+                if response.status_code == 200:
+                    image = Image.open(BytesIO(response.content))
+                    img_byte_arr = BytesIO()
+                    image.save(img_byte_arr, format=image.format)
+                    image_data = img_byte_arr.getvalue()
+            except Exception as e:
+                print(f"Failed to download image from {image_url}: {e}")
+
+        # Create or retrieve the book
+        book_data = BookSchema(
+            title=title,
+            subtitle=subtitle,
+            genre=genre,
+            published_year=published_year,
+            description=description,
+            average_rating=average_rating,
+            num_pages=num_pages,
+            ratings_count=ratings_count,
+            image_data=image_data  # New field
+        )
+        db_book = create_book(db, author_names, book_data)
+        
+        # Create authors and associate them with the book
+        for author_name in author_names:
+            # Check if author exists
+            db_author = get_author_by_name(db, author_name)
+            if not db_author:
+                author_data = AuthorSchema(name=author_name, biography=None)
+                db_author = create_author(db, author_data)
+
+            # Associate the author with the book
+            associate_book_with_author(db, db_book.book_id, db_author.author_id)
+
+def create_book(db: Session, authors: List[str], book: BookSchema):
+    author_instances = []
+
+    for author_name in authors:
+        author_instance = create_or_get_author(db, author_name)
+        author_instances.append(author_instance)
+
+    db_book = Book(**book.dict())
+    
+    try:
+        db.add(db_book)
+        db.commit()
+        db.refresh(db_book)
+        add_book_chromadb(db_book.book_id, authors, book)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Book already exists")
+
+    return db_book
+
+def create_or_get_author(db: Session, author_name: str) -> Author:
+    author_instance = db.query(Author).filter(Author.name == author_name).first()
+    
+    if not author_instance:
+        author_instance = create_author(db, AuthorSchema(name=author_name))
+    
+    return author_instance
+
+def create_author(db: Session, author: AuthorSchema) -> Author:
+    db_author = Author(**author.dict())
+    
+    try:
+        db.add(db_author)
+        db.commit()
+        db.refresh(db_author)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Author already exists")
+
+    return db_author
+
+def add_book_chromadb(book_id: str, authors: List[str], book_info: BookSchema):
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    authors_str = ', '.join(authors)
+
+    combined_text = f"{book_info.title} {book_info.subtitle or ''} " \
+                    f"{authors_str} " \
+                    f"{book_info.published_year or ''} " \
+                    f"{book_info.average_rating or ''} " \
+                    f"{book_info.num_pages or ''} " \
+                    f"{book_info.ratings_count or ''} " \
+                    f"{book_info.genre or ''} " \
+                    f"{book_info.description or ''}"
+
+    combined_embedding = model.encode(combined_text).tolist()
+
+    metadata = {
+        'title': book_info.title,
+        'subtitle': book_info.subtitle,
+        'authors': authors_str,
+        'published_year': book_info.published_year,
+        'average_rating': book_info.average_rating,
+        'num_pages': book_info.num_pages,
+        'ratings_count': book_info.ratings_count,
+        'genre': book_info.genre,
+        'description': book_info.description,
+        'image_data': book_info.image_data  # New field
+    }
+
+    collection.add(
+        documents=[{'book_info': combined_text}],
+        embeddings=[combined_embedding],
+        ids=[str(book_id)],
+        metadatas=[metadata]
+    )
+
+    print("Documents added to the collection successfully.")
+    return "Documents added to the collection successfully."
+
+def get_author_by_name(db: Session, author_name: str) -> Author:
+    return db.query(Author).filter(Author.name == author_name).first()
+
+def associate_book_with_author(db: Session, book_id: int, author_id: int):
+    association_exists = db.query(author_association_table).filter_by(book_id=book_id, author_id=author_id).first()
+    
+    if not association_exists:
+        association = author_association_table.insert().values(book_id=book_id, author_id=author_id)
+        db.execute(association)
+        db.commit()
+
+if __name__ == "__main__":
+    db_session = session_local()
+    try:
+        process_csv('cleaned_books.csv', db_session)
+    finally:
+        db_session.close()
+With these changes, your code will download the images from the URLs in the CSV file and store the binary data in the database.
+
+
+
+
+
+
