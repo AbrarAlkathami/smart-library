@@ -7,8 +7,9 @@ session_id = "1"
 
 def get_response(query):
     response = requests.post(
-        "http://127.0.0.1:8002/chat",  # Ensure this is the correct port
-        json={"query": query, "session_id": session_id}
+       "http://127.0.0.1:8002/chat",  # Ensure this is the correct port
+        json={"query": query, "session_id": session_id},
+        timeout=10000
     )
     if response.status_code == 200:
         return response.json().get("response", "")

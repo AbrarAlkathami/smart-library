@@ -1,26 +1,14 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory 
 from langchain_core.chat_history import InMemoryChatMessageHistory
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.messages import BaseMessage, AIMessage, HumanMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-import sys
-from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
 from common.CRUD.books_chroma_crud import get_similarity
+from langchain.chains.retrieval import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from typing import TypedDict, Annotated, List, Union
 from langchain_core.agents import AgentAction, AgentFinish
 import operator
-from typing import TypedDict, Annotated, List, Union
-
-
-
-class AgentState(TypedDict):
-    input: str
-    agent_out: Union[AgentAction, AgentFinish, None]
-    intermediate_steps: Annotated[list[tuple[AgentAction, str]], operator.add]
+from langchain_core.tools import tool
 
 
 store = {}
@@ -30,29 +18,36 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
         store[session_id] = InMemoryChatMessageHistory()
     return store[session_id]
 
-def generate_response(session_id: str, user_input: str):
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a helpful AI bot, just answer a question that are relevent to this data {vector_info}, if the question does not mention in the data say that you don't know about this information"),
-        ("human", "{user_input}"),
-    ])
+def generate_response(session_id: str, query: str):
 
-    model = OllamaLLM(model="llama3.1")
+    llm = OllamaLLM(model="llama3.1" ,n_gpu_layers=1,
+    n_batch=512,
+    n_ctx=2048,
+    f16_kv=True,  
+    verbose=True,)
+    check_prompt = ("determine what does the query was about?, if the the user ask to filter categories for books return (filter categories)"
 
-    chain = prompt | model
-    history = get_session_history(session_id)
+    )
 
-    # Retrieve vector info if needed
-    vector_info = ""
-    prompt_with_vector_info = f"User asked: {user_input}\n\nVector Database Results:\n{vector_info}\n\nAI Answer:"
-    response = chain.invoke({"user_input": prompt_with_vector_info})
+    system_prompt = (
+                "You are an asistant for smart library"
+                "Use the given context to answer the question. "
+                "If you don't know the answer, say you don't know. "
+                "Use three sentence maximum and keep the answer concise. "
+                "Context: {context}"
+            )
+    prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", system_prompt),
+                    ("human", "{input}"),
+                ]
+            )
+    context = get_similarity(query)
+    question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    chain = create_retrieval_chain(context, question_answer_chain)
 
-    # Add messages to history
-    history.add_messages([
-        HumanMessage(content=user_input),
-        AIMessage(content=response)
-    ])
+    response= chain.invoke({"input": query})
 
     return response
      
      
- 
