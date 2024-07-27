@@ -26,7 +26,6 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 
 
 def format_docs(docs):
-    # Concatenate all relevant data from each metadata entry
     formatted_data = "\n\n".join(
         f"Title: {doc.get('title', 'No Title')}, "
         f"Authors: {doc.get('authors', 'No Authors')}, "
@@ -36,32 +35,43 @@ def format_docs(docs):
         f"Num Pages: {doc.get('num_pages', 'No Page Number')}, "
         f"Published Year: {doc.get('published_year', 'No Publication Year')}, "
         f"Ratings Count: {doc.get('ratings_count', 'No Ratings Count')}"
-        for doc in docs
+        for doc in docs if isinstance(doc, dict)
     )
     return formatted_data
 
 def generate_response_with_context(system_prompt: str, query: str):
-    print("this is the gerate a response with context")
+    print("This is the generate a response with context function")
+    print("\n\n")
+    
+    # Initialize the LLM
     llm = OllamaLLM(model="llama3.1", n_gpu_layers=1, n_batch=512, n_ctx=2048, f16_kv=True, verbose=True)
 
-    # Update the placeholder to match the invoke call
+    # Retrieve similar books based on the query
+    context = get_similarity(query)  # This function should return the precise context format you need
+
+    # Format the metadata for the RAG chain
+    print(context)
+
     prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "{query}"),  # This should be used in the placeholder
+        ("system", system_prompt ),
+        ("human", query ),
     ])
+    print(f"Created ChatPromptTemplate")
 
-    context = get_similarity(query)  # Assuming this returns a list of dictionaries
-    formatted_context = format_docs(context)  # Format the metadata for the RAG chain
-
+    # Construct the RAG chain
     rag_chain = (
-        {"context": formatted_context, "question": RunnablePassthrough()}
+        RunnablePassthrough()  # Ensures context and query data is passed through
+        | (lambda x: {"context" : context , "query": query})  
         | prompt
         | llm
-        | StrOutputParser()
+        | StrOutputParser()  # Parses the string output from LLM
     )
-    print("This is the RAG chain:", rag_chain)
-    response = rag_chain.invoke({"query": query})
-    print("We got the response:", response)
+
+    # print("This is the RAG chain:", rag_chain)
+
+    # Pass both context and query to the RAG chain
+    response = rag_chain.invoke({"context" : context ,"query": query})
+    # print("We got the response:", response)
     return response
     
     # print("this is the gereate a response with context and we got the context: " , context)
@@ -99,7 +109,7 @@ def generate_response(system_prompt: str, query: str):
 
 def generate_response_intent(db: Session ,session_id: str, query: str):
 
-    intent_prompt = f"You are a helpful AI bot, specialized in classifying book data queries. When a user submits a query, classify it as: '{query}'. Determine if the user is asking to add a book, filter data, display relevant books, request a summary, or view book information. Respond with 'add_book', 'filter', 'display_books', 'summary', 'information', or 'unknown' and provide details if applicable. If the requested data is not found, simply respond, 'I am sorry I do not have that information.' Avoid providing any additional information."
+    intent_prompt = f"You are a helpful AI bot, specialized in classifying book data queries. When a user submits a query, classify it as: '{query}'. Determine if the user is asking to add a book, filter data, display relevant books, request a summary, or view book information. Respond with 'add_book', 'filter', 'display_books', 'list_all_books', 'summary', 'information', or 'unknown' and provide details if applicable. If the requested data is not found, simply respond, 'I am sorry I do not have that information.' Avoid providing any additional information."
     # intent_response = llm.generate_one(intent_prompt).strip().lower()
     intent_response= generate_response(intent_prompt, query)
     print(intent_response)
@@ -126,17 +136,25 @@ def generate_response_intent(db: Session ,session_id: str, query: str):
     #     filters = parse_filters_from_query(query)
     #     filtered_books = get_books_by_filter(db, filters)
     #     return display_books_as_table(filtered_books)
-    elif 'display_books' in intent_response:
+    elif 'display_books' in intent_response or 'list_all_books' in intent_response:
+        context = get_similarity(query)  # This function should return the precise context format you need
+
+        # Format the metadata for the RAG chain
         display_books_prompt = (
-            f"When asked to display book information, you will present the details in a structured table format. Ensure the table includes columns for the following attributes: Title, Authors, Published Year, Genre, Average Rating, Number of Pages, and Ratings Count. If any data is missing for a book, leave the corresponding cell empty. Before displaying the information, make sure that the books you are about to show are exactly the ones requested by the user. Cross-verify the titles and authors or description to ensure 100% accuracy."
-            f"Query: '{query}'"
-        )
-        # Assuming you have a way to get relevant books
+
+        f"When asked to display book information, the query may ask with author name, book name, and other book details. First, ensure that the book is within the provided context: {context}. "
+        "The context will be like this: a list of dictionaries, each book in a dictionary "
+        "Present all the context with its details in a structured table format. Ensure the table includes all the keys in the {context} dictionaries .If any data is missing for a book, leave the corresponding cell empty. "
+        "Avoid providing any additional information. "
+        f"context: {context} "
+        f"query: {query}"
+    )      # Assuming you have a way to get relevant books
+
         response = generate_response_with_context(display_books_prompt , query)  # Define this function
         return response
     elif 'summary' in intent_response or 'chat' in intent_response:
         summary_books_prompt = (
-            f"When asked to summarize a book description, first ensure that the book is within the provided context. If the book information is not available, respond with (I don't have this book's information.) If the book is found, provide a concise and clear summary that captures the essence of the book's plot, main themes, and key points. Ensure the summary is brief, no longer than a few sentences, and avoids unnecessary details or spoilers."
+            f"When asked to summarize a book description, first ensure that the book is within the provided context. If the book information is not available, respond with I don't have this book's information. If the book is found, provide a concise and clear summary that captures the essence of the book's plot, main themes, and key points. Ensure the summary is brief, no longer than a few sentences, and avoids unnecessary details or spoilers."
             f"Query: '{query}'"
         )
         response = generate_response_with_context(summary_books_prompt , query)  # Define this function
