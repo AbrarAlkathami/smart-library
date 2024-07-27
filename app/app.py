@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from routes import users, books, authors
 from common.database.database import *
-from services.ollama_model import generate_response
+from services.ollama_model import *
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
@@ -24,11 +24,12 @@ def health_check():
     return {"message": "API is running"}
 
 @app.post("/chat")
-def chat_with_model(request: ChatRequest):
+def chat_with_model(request: ChatRequest , db: Session = Depends(get_db)):
     try:
-        response = generate_response(request.session_id, request.query)
+        response = generate_response_intent(db, request.session_id, request.query)
         return {"response": response}
     except Exception as e:
+        print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -2,6 +2,7 @@ from common.database.chromaDB import *
 from sentence_transformers import SentenceTransformer
 from  sqlalchemy.orm import Session
 from schemas.book import *
+from common.database.models import*
 
 def add_book_chromadb(book_id: str, authors: List[str], book_info : BookSchema):
     model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -24,15 +25,15 @@ def add_book_chromadb(book_id: str, authors: List[str], book_info : BookSchema):
 
     # Prepare metadata dictionary
     metadata = {
-        'title': book_info.title,
-        'subtitle': book_info.subtitle,
+        'title': book_info.title or '',
+        'subtitle': book_info.subtitle or '',
         'authors': authors_str,  # Convert list to string
-        'published_year': book_info.published_year,
-        'average_rating': book_info.average_rating,
-        'num_pages': book_info.num_pages,
-        'ratings_count': book_info.ratings_count,
-        'genre': book_info.genre,
-        'description': book_info.description
+        'published_year': book_info.published_year or '',
+        'average_rating': book_info.average_rating or '',
+        'num_pages': book_info.num_pages or '',
+        'ratings_count': book_info.ratings_count or '',
+        'genre': book_info.genre or '',
+        'description': book_info.description or ''
     }
 
     collection.add(
@@ -52,3 +53,18 @@ def get_similarity(query_text : str):
     return results['metadatas']
 
 
+def get_books_by_filter(db: Session, filters: dict):
+    book_query = db.query(Book)
+    if 'title' in filters and filters['title']:
+        book_query = book_query.filter(Book.title.contains(filters['title']))
+    if 'author' in filters and filters['author']:
+        book_query = book_query.join(Book.authors).filter(Author.name == filters['author'])
+    if 'genre' in filters and filters['genre']:
+        book_query = book_query.filter(Book.genre.contains(filters['genre']))
+    if 'published_year' in filters and filters['published_year']:
+        book_query = book_query.filter(Book.published_year == filters['published_year'])
+    if 'average_rating' in filters and filters['average_rating']:
+        book_query = book_query.filter(Book.average_rating >= filters['average_rating'])
+    if 'num_pages' in filters and filters['num_pages']:
+        book_query = book_query.filter(Book.num_pages <= filters['num_pages'])
+    return book_query.all()
