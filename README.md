@@ -1,5 +1,5 @@
 # smart-library
-Welcome to the Smart Bookstore project! This repository contains the implementation of a comprehensive book management system with both a chatbot interface and a book library interface.
+Welcome to the Smart library project! This repository contains the implementation of a comprehensive book management system with both a chatbot interface and a book library interface.
 
 ## Overview
 The Smart Bookstore project is designed to provide a versatile platform for managing and interacting with a collection of books. It includes:
@@ -59,7 +59,10 @@ streamlit run app/frontend.py
 
 ## Usage
   #### Accessing the Chatbot Interface
-    Navigate to the Streamlit app URL provided in your terminal to interact with the chatbot.
+  - Ensure the FastAPI server is running.
+  - Navigate to the Streamlit app URL provided in your terminal to interact with the chatbot.
+
 
   #### Accessing the Book Library Interface
-    Open index.html in your browser to view and search for books in the library.
+  - Ensure the FastAPI server is running.
+  - Open index.html in your browser to view and search for books in the library.
