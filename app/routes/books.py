@@ -33,9 +33,6 @@ def get_book_route(book_title: str, db: Session = Depends(get_db)):
 @router.get("/books/search/{user_query}", response_model=List[BookSchema], tags=["Books"], operation_id="search_books")
 def search_books_route(user_query: str, db: Session = Depends(get_db)):
     books = search_books(db, user_query)
-    print(books)
-    if not books:
-        raise HTTPException(status_code=404, detail="No books found")
     return books
 
 @router.post("/books", response_model=BookSchema, tags=["Books"], operation_id="create_book_record")

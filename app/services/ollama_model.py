@@ -20,20 +20,6 @@ from langchain_core.messages import HumanMessage,AIMessage
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 
-def format_docs(docs):
-    formatted_data = "\n\n".join(
-        f"Title: {doc.get('title', 'No Title')}, "
-        f"Authors: {doc.get('authors', 'No Authors')}, "
-        f"Average Rating: {doc.get('average_rating', 'No Rating')}, "
-        f"Description: {doc.get('description', 'No Description')}, "
-        f"Genre: {doc.get('genre', 'No Genre')}, "
-        f"Num Pages: {doc.get('num_pages', 'No Page Number')}, "
-        f"Published Year: {doc.get('published_year', 'No Publication Year')}, "
-        f"Ratings Count: {doc.get('ratings_count', 'No Ratings Count')}"
-        for doc in docs if isinstance(doc, dict)
-    )
-    return formatted_data
-
 def get_session_history(session_id):
     return SQLChatMessageHistory(session_id, "sqlite:///memory.db")
 
@@ -97,13 +83,13 @@ def generate_response(system_prompt: str, session_id: str, query: str):
     return response
 
 def generate_response_intent(db: Session, session_id: str, query: str):
-    intent_prompt = f"You are specialized in classifying book data queries. When a user submits a query, classify it as: '{query}'. Determine if the user is asking to add a book, display relevant books, request a summary, or ask for book information. Respond with 'add_book', 'display_books', 'list_all_books', 'summary', 'information', if it does not one of the choices return 'unkown'. Avoid providing any additional information."
+    intent_prompt = f"You are specialized in classifying book data queries. When a user submits a query, classify it as: '{query}'. Determine if the user is asking to add a book, display relevant books, request a summary, ask for book information, or get books recommendation. Respond with 'add_book', 'display_books', 'list_all_books', 'summary', 'information', or 'recommendation'  if it does not one of the choices return 'unkown'. Avoid providing any additional information."
     
     intent_response = generate_response(intent_prompt, session_id, query)
     print(intent_response)
     if 'add_book' in intent_response:
         add_book_prompt = (
-            f"Format the book information in JSON Include the authors. If there is any empty value, make sure it stores as null. jsut return the json without any explanation"
+            f"Format the book information in JSON and Include the authors. If there is any empty value, make sure it gets stored as null. just return the json without any explanation"
             f"Example: 'title': 'book title', 'subtitle': 'subtitle', 'published_year': 'published year', 'average_rating': 'average rating', 'num_pages': 'number of pages', 'ratings_count': 'ratings count', 'genre': 'genre', 'description': 'description', 'authors': ['author1', 'author2']."
             f"Query: '{query}'"
         )
@@ -124,6 +110,7 @@ def generate_response_intent(db: Session, session_id: str, query: str):
         display_books_prompt = (
             "Display books based on the user's query. Provide the list of books in a table format with the relevant details. "
             "Do not provide anything outside of the query context."
+            "if the book is not available in the database then apologize"
             "context: {context}"
             "the return value must be as table with books information"
         )
@@ -138,6 +125,7 @@ def generate_response_intent(db: Session, session_id: str, query: str):
             "2- Identify the description for the mentioned book in the user's query. "
             "3- If the book information is unavailable, respond with 'I don't have this book's information.' "
             "4- If the book description is available, deliver a concise summary that encapsulates the main plot. "
+            "Do the verification and identification without mentioning it to the userx"
             "Ensure the summary is brief, ideally no more than two sentences. Avoid providing any additional information."
         )
         
@@ -153,11 +141,12 @@ def generate_response_intent(db: Session, session_id: str, query: str):
         
         response = generate_response_with_context(information_book_prompt, session_id, query)
         return response
-
+    elif 'recommendation' in intent_response:
+        return response 
     else:
         print("else")
         system_prompt = (
-            "you can not give the user this service. your job is just to add a book to DB, display relevant books, response with a summary for any book, or ask for book information. Avoid providing any additional information."
+            "you can not give the user this service. your job is just to add a book to the Database, display relevant books, response with a summary for any book, or ask for book information. Do not provide any additional information."
         )
         response = generate_response_with_context(system_prompt, session_id, query)
         return response

@@ -38,7 +38,9 @@ function displayBooks(books) {
         const coverPhoto = document.createElement("div");
         coverPhoto.classList.add("cover-photo");
         const img = document.createElement("img");
-        img.src = book.thumbnail || 'https://via.placeholder.com/150';
+        const thumbnailUrl = book.thumbnail && book.thumbnail.trim() !== '' ? book.thumbnail : 'https://via.placeholder.com/150';
+        console.log(`Book title: ${book.title}, Thumbnail URL: ${thumbnailUrl}`);
+        img.src = thumbnailUrl;
         coverPhoto.appendChild(img);
 
         const bookTitle = document.createElement("div");
@@ -50,4 +52,5 @@ function displayBooks(books) {
 
         bookGallery.appendChild(bookItem);
     });
+
 }
