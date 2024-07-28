@@ -11,8 +11,8 @@ from services.ollama_model import *
 router = APIRouter()
 
 @router.get("/books", response_model=List[BookSchema], tags=["Books"], operation_id="get_books_list")
-def get_books_route(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    log_user_activity(db, current_user['username'], "Searched for all books")
+def get_books_route(db: Session = Depends(get_db)):
+    # log_user_activity(db, current_user['username'], "Searched for all books")
     return get_books(db)
 
 @router.get("/books/{book_id}", response_model=BookSchema, tags=["Books"], operation_id="get_book_by_title")
@@ -22,6 +22,21 @@ def get_book_route(book_id: int, db: Session = Depends(get_db), current_user: di
         raise HTTPException(status_code=200, detail="Book not found")
     log_user_activity(db, current_user['username'], f"Searched for book with id: {book_id}")
     return book
+
+@router.get("/books/{book_title}", response_model=BookSchema, tags=["Books"], operation_id="get_book_by_title")
+def get_book_route(book_title: str, db: Session = Depends(get_db)):
+    book = get_book_by_title(db, book_title)
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return book
+
+@router.get("/books/search/{user_query}", response_model=List[BookSchema], tags=["Books"], operation_id="search_books")
+def search_books_route(user_query: str, db: Session = Depends(get_db)):
+    books = search_books(db, user_query)
+    print(books)
+    if not books:
+        raise HTTPException(status_code=404, detail="No books found")
+    return books
 
 @router.post("/books", response_model=BookSchema, tags=["Books"], operation_id="create_book_record")
 def create_book_route( authors: List[str], book: BookSchema, db: Session = Depends(get_db), current_user: dict = Depends(admin_required)):
@@ -47,7 +62,7 @@ def get_recommended_books_route(db: Session = Depends(get_db), current_user: dic
         raise HTTPException(status_code=404, detail=str(e))
 
 # store_books_in_vectorDB()
-@router.get("/books/search/{user_query}")
+@router.get("/books/search/similarity{user_query}")
 def get_book_similarity(user_query: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     similarity_text_result = get_similarity(user_query)
     if not similarity_text_result:

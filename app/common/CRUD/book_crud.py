@@ -13,8 +13,15 @@ def get_books(db: Session):
 def get_book_by_id(db: Session, book_id: int):
     return db.query(Book).filter(Book.book_id == book_id).first()
 
-def get_book_by_title(db: Session, title: str):
-    return db.query(Book).filter(Book.title == title).first()
+def get_book_by_title(db: Session, title: str) -> BookSchema:
+    book = db.query(Book).filter(Book.title.ilike(f"%{title}%")).first()
+    if book:
+        return BookSchema.from_orm(book)
+    return None
+
+def search_books(db: Session, query: str) -> List[BookSchema]:
+    books = db.query(Book).filter(Book.title.ilike(f"%{query}%")).all()
+    return [BookSchema.from_orm(book) for book in books]
 
 def create_book(db: Session, authors: List[str] ,book: BookSchema):
     # Ensure the author exists in the database
@@ -47,14 +54,15 @@ def update_book(db: Session, book_id: int, book: BookSchema):
     if not db_book:
         raise HTTPException(status_code=404, detail="Book not found")
     
-    db_author = db.query(Author).filter(Author.author_id == book.author_id).first()
-    if not db_author:
-        raise HTTPException(status_code=404, detail="Author not found")
-
     db_book.title = book.title
-    db_book.author_id = book.author_id
+    db_book.subtitle = book.subtitle
+    db_book.published_year = book.published_year
+    db_book.average_rating = book.average_rating
+    db_book.num_pages = book.num_pages
+    db_book.ratings_count = book.ratings_count
     db_book.genre = book.genre
     db_book.description = book.description
+    db_book.thumbnail = book.thumbnail
 
     try:
         db.add(db_book)
@@ -65,6 +73,8 @@ def update_book(db: Session, book_id: int, book: BookSchema):
         raise HTTPException(status_code=409, detail="Book already exists")
 
     return db_book
+
+
 def delete_book(db: Session, book_id: int):
     db_book = db.query(Book).filter(Book.book_id == book_id).first()
     if not db_book:

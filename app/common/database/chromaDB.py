@@ -10,6 +10,7 @@ client = chromadb.PersistentClient(
     database=DEFAULT_DATABASE,
 )
 collection = client.get_or_create_collection(name="books_collection")
+
 # client.delete_collection(name="books_collection")
 # print(similarity_text("what are the harry potter books?"))
 

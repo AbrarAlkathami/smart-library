@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Gallery</title>
+    <link rel="stylesheet" href="/static/style/book.css">
+    <script defer src="/static/scripts/book.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="page-title">Smart Library</div>
+        <div class="search-bar" id="poda">
+            <div class="glow"></div>
+            <div class="darkBorderBg"></div>
+            <div class="darkBorderBg"></div>
+            <div class="darkBorderBg"></div>
+            <div class="white"></div>
+            <div class="border"></div>
+            <div id="main">
+                <input placeholder="Search..." type="text" name="text" class="input" id="searchInput" />
+                <div id="input-mask"></div>
+                <div id="pink-mask"></div>
+                <div class="filterBorder"></div>
+                <div id="search-icon" onclick="searchBooks()">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke-linejoin="round"
+                        stroke-linecap="round"
+                        height="24"
+                        fill="none"
+                        class="feather feather-search"
+                    >
+                        <circle stroke="url(#search)" r="8" cy="11" cx="11"></circle>
+                        <line
+                            stroke="url(#searchl)"
+                            y2="16.65"
+                            y1="22"
+                            x2="16.65"
+                            x1="22"
+                        ></line>
+                        <defs>
+                            <linearGradient gradientTransform="rotate(50)" id="search">
+                                <stop stop-color="#f8e7f8" offset="0%"></stop>
+                                <stop stop-color="#b6a9b7" offset="50%"></stop>
+                            </linearGradient>
+                            <linearGradient id="searchl">
+                                <stop stop-color="#b6a9b7" offset="0%"></stop>
+                                <stop stop-color="#837484" offset="50%"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <div class="book-gallery" id="bookGallery">
+            <!-- Book items will be dynamically added here -->
+        </div>
+    </div>
+</body>
+</html>

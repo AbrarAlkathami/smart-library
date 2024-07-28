@@ -56,15 +56,16 @@ class Author(Base):
 
 class Book(Base):
     __tablename__ = "books"
-    book_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    title = Column(String)
-    subtitle =Column(String)
-    published_year= Column(Integer)
-    average_rating=Column(Float)
-    num_pages=Column(Integer)
-    ratings_count=Column(Integer)
-    genre = Column(String)
-    description = Column(String)
+    book_id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    subtitle = Column(String, nullable=True)
+    published_year = Column(Integer, nullable=True)
+    average_rating = Column(Float, nullable=True)
+    num_pages = Column(Integer, nullable=True)
+    ratings_count = Column(Integer, nullable=True)
+    genre = Column(String, nullable=True)
+    description = Column(String, nullable=True)
+    thumbnail = Column(String, nullable=True)
 
     authors = relationship(
         "Author",
