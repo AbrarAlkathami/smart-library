@@ -142,6 +142,8 @@ def generate_response_intent(db: Session, session_id: str, query: str):
         response = generate_response_with_context(information_book_prompt, session_id, query)
         return response
     elif 'recommendation' in intent_response:
+        recommendation_prompt= " Give the user book reccomendations based on a category of their choice, give the user five book recommendations and mention the description, published year and average rating of each book you reccomend"
+        response = generate_response_with_context(recommendation_prompt, session_id, query)
         return response 
     else:
         print("else")
