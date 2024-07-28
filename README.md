@@ -28,7 +28,7 @@ The Smart Bookstore project is designed to provide a versatile platform for mana
     - SQLAlchemy (PostgreSQL)
     - ChromaDB
 
-##Setup Instructions
+## Setup Instructions
 To set up the project locally, follow these steps:
 
 ### Clone the repository:
