@@ -31,28 +31,28 @@ The Smart Bookstore project is designed to provide a versatile platform for mana
 ##Setup Instructions
 To set up the project locally, follow these steps:
 
-####Clone the repository:
+###Clone the repository:
 `
 git clone https://github.com/yourusername/smart-bookstore.git
 cd smart-bookstore
 `
-####Install dependencies:
+###Install dependencies:
 `
 poetry install
 `
 
-####Set up the database:
+###Set up the database:
 `
 Ensure PostgreSQL is installed and running.
 Create a new database and update the connection details in your FastAPI settings.
 `
 
-####Run the FastAPI server:
+###Run the FastAPI server:
 `
 uvicorn app.main:app --reload
 `
 
-####Run the Streamlit app:
+###Run the Streamlit app:
 `
 streamlit run app/frontend.py
 `
