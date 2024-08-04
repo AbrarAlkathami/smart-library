@@ -11,15 +11,16 @@ from middleware.logger import log_user_activity
 
 router = APIRouter()
 
-@router.post("/users/register", response_model=UserSchema, tags=["Users"])
+@router.post("/users/register", response_model=TokenSchema, tags=["Users"])
 def register_user(user: UserSchema, db: Session = Depends(get_db)):
     try:
         new_user = create_user(db, user)
         log_user_activity(db, user.username, "User registration")
-        return UserSchema(username=new_user.username, password="", role=new_user.role)
+        access_token = create_access_token(data={"sub": new_user.username})
+        return {"access_token": access_token, "token_type": "bearer"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-
+    
 @router.post("/users/login", response_model=TokenSchema, tags=["Users"])
 def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)

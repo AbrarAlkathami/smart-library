@@ -20,9 +20,6 @@ from langchain_core.messages import HumanMessage,AIMessage
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 
-def get_session_history(session_id):
-    return SQLChatMessageHistory(session_id, "sqlite:///memory.db")
-
 store = {}
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
@@ -35,7 +32,7 @@ def generate_response_with_context(system_prompt: str,session_id: str, query: st
 
     print("This is the generate a response with context function")
     
-    llm = OllamaLLM(model="llama3.1", n_gpu_layers=1, n_batch=512, n_ctx=2048, f16_kv=True, verbose=True)
+    llm = OllamaLLM(model="llama3.1")
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -82,19 +79,46 @@ def generate_response(system_prompt: str, session_id: str, query: str):
     ])
     return response
 
-def generate_response_intent(db: Session, session_id: str, query: str):
-    intent_prompt = f"You are specialized in classifying book data queries. When a user submits a query, classify it as: '{query}'. Determine if the user is asking to add a book, display relevant books, request a summary, ask for book information, or get books recommendation. Respond with 'add_book', 'display_books', 'list_all_books', 'summary', 'information', or 'recommendation'  if it does not one of the choices return 'unkown'. Avoid providing any additional information."
+def generate_add_book_response(system_prompt: str, session_id: str, query: str):
+    history = get_session_history(session_id)
+    llm = OllamaLLM(model="llama3.1", n_gpu_layers=1, n_batch=512, n_ctx=2048, f16_kv=True, verbose=True)
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", query),
+    ])
     
+    chain = prompt | llm
+    print("get the chain")
+    response = chain.invoke({"query": query})
+    history.add_messages([
+        HumanMessage(content=query),
+        AIMessage(content=response)
+    ])
+    return response
+
+def generate_response_intent(db: Session, session_id: str, query: str):
+    intent_prompt = f"""
+    You are specialized in classifying book data queries. 
+    The user will submit a query.
+    Determine if the user is asking to add a book, display relevant books, request a summary, ask for book information, or get books recommendation. 
+    Respond with 'add_book', 'display_books', 'list_all_books', 'summary', 'information', or 'recommendation'  if it does not one of the choices return 'unkown'. 
+    Avoid providing any additional information.
+
+    This is the query: 
+    {query}
+    """
+
     intent_response = generate_response(intent_prompt, session_id, query)
     print(intent_response)
     if 'add_book' in intent_response:
         add_book_prompt = (
-            f"Format the book information in JSON and Include the authors. If there is any empty value, make sure it gets stored as null. just return the json without any explanation"
-            f"Example: 'title': 'book title', 'subtitle': 'subtitle', 'published_year': 'published year', 'average_rating': 'average rating', 'num_pages': 'number of pages', 'ratings_count': 'ratings count', 'genre': 'genre', 'description': 'description', 'authors': ['author1', 'author2']."
-            f"Query: '{query}'"
+            "Format the book information in JSON and Include the authors. If there is any empty value, make sure it gets stored as null. just return the json without any explanation"
+            "Example: 'title': 'book title', 'subtitle': 'subtitle', 'published_year': 'published year', 'average_rating': 'average rating', 'num_pages': 'number of pages', 'ratings_count': 'ratings count', 'genre': 'genre', 'description': 'description', 'authors': ['author1', 'author2']."
+            "Query: '{query}'"
         )
 
-        book_info = generate_response(add_book_prompt, session_id, query)
+        book_info = generate_add_book_response(add_book_prompt, session_id, query)
         
         try:
 
@@ -133,7 +157,6 @@ def generate_response_intent(db: Session, session_id: str, query: str):
         return response
 
     elif 'information' in intent_response:
-        print("info")
         information_book_prompt = (
             "Answer questions specifically related to the provided context. Ensure responses are precise, relevant, and informative. "
             "Do not provide any information not found in the database."

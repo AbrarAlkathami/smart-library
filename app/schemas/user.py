@@ -16,3 +16,10 @@ class UserActivitySchema(BaseModel):
     username: str
     activity: str
     timestamp: datetime
+
+class UserPreferenceSchema(BaseModel):
+    preference_type: str
+    preference_value: str
+
+    class Config:
+        from_attributes = True
