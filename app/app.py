@@ -2,27 +2,27 @@ from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from routes import users, books, authors
+from routes import users, books, authors ,preferences
 from common.database.database import *
 from services.ollama_model import *
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
+    allow_origins=["*"], 
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],  
+    allow_headers=["*"], 
 )
 
 app.include_router(users.router)
 app.include_router(books.router)
 app.include_router(authors.router)
+app.include_router(preferences.router)
 
 # Serve static files
 app.mount("/static", StaticFiles(directory="frontend"), name="static")

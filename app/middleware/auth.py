@@ -75,3 +75,13 @@ def admin_required(current_user: dict = Depends(get_current_user)):
     if 'role' not in current_user or current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
+
+
+
+def validate_password(password: str) -> None:
+    if len(password) < 8:
+        raise ValueError("Password must be at least 8 characters long")
+    if not any(char.isdigit() for char in password):
+        raise ValueError("Password must contain at least one number")
+    if any(not char.isalnum() for char in password):
+        raise ValueError("Password must not contain symbols")

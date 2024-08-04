@@ -1,0 +1,182 @@
+.form-container {
+    width: 651px;
+    height: 50%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 5%;
+    background-color:#172242;
+    color: #FFFFFF;
+  }
+  
+  .form-section {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    color: #AFB1B6;
+    margin-bottom: 15px;
+    margin-left: 4%;
+    
+  }
+  .login-signup-name{
+    font-size: 20px;
+    margin-bottom: 3%;
+    margin-top: 3%;
+    text-align: center;
+  }
+
+  .error {
+    color: red;
+    margin: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+
+  }
+  
+  .form-group label {
+    font-size: 14px;
+    display: block;
+    background-color: transparent;
+    border: none;
+    width: 544px;
+    margin-bottom: 1.5%;
+  }
+  
+  .form-group input {
+    width: 99%;
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border-color: #AFB1B6;
+    color: #FAFAFA;
+    border-style:ridge;
+    background-color: transparent;
+    margin-bottom: 4%;
+    height: 45px;
+
+  }
+  button {
+    width: 20%;
+    text-align: center;
+    padding: 10px;
+    background-color: #41D0C8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 5%;
+    margin-top: 1%;
+  }
+  
+  button:hover {
+    background-color: #445A9A;
+  }
+  
+  .line-div{
+
+    width: 93.7%;
+  margin-left: 3.7%;
+  height: 1px;
+  background: #FAFAFA;
+  margin-top:5%;
+  margin-bottom: 5%;
+  }
+
+  .password-instructions{
+    margin: 4%  6% 0% 7%;
+    color: #61646B;
+    font-size: 16px;
+   
+  }
+
+  .password-instructions ul {
+    list-style: none;
+    padding-left: 20px;
+  }
+  
+  .password-instructions li {
+    padding-bottom: 5px;
+    color: #61646B; /* Initial color */
+  }
+  
+  .password-instructions li.valid {
+    color: green;
+  }
+
+  .form-container-preferences{
+    width: 651px;
+    height: 50%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 5%;
+    background-color:#172242;
+    color: #FFFFFF;
+  }
+  .pref-title{
+    margin-top: 20px;
+    text-align: center;
+    color: #FFFFFF;
+  }
+
+  
+  .pref-title {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .preference-dropdown {
+    position: relative;
+  }
+  
+  .dropdown-header {
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #445A9A;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 5px;
+    border-radius: 5px;
+    background-color: #445A9A;
+    z-index: 10;
+  }
+  
+  .dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .pref-buttons{
+    width:100%;
+    justify-content: row;
+    padding: 10px;
+    transform: translateX(-170px); 
+  }
+  .dropdown-item:hover {
+    font-weight: bold;
+  }
+  
+  button[type="submit"],
+  button[type="button"] {
+   width: 150px;
+   text-align: center;
+   margin-right: 170px;
+   transform: translateX(250px); 
+  }
+  .add-preference{
+    margin-top: 1%;
+    margin-bottom: 1%;
+    transform: translateX(30px);
+  }

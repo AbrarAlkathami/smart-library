@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional , List
+from schemas.author import AuthorSchema
 
 class BookSchema(BaseModel):
     title: str
@@ -11,8 +12,7 @@ class BookSchema(BaseModel):
     genre: Optional[str] = None
     description: Optional[str] = None
     thumbnail: Optional[str] = None
-    
-    class Config:
-        orm_mode = True
-        from_attributes = True
+    authors: List[AuthorSchema]    
 
+    class Config:
+        from_attributes = True

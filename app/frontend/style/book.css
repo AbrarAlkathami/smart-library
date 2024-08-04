@@ -23,17 +23,6 @@ body {
 
 }
 
-.grid {
-    height: 800px;
-    width: 800px;
-    background-image: linear-gradient(to right, #0f0f10 1px, transparent 1px),
-    linear-gradient(to bottom, #0f0f10 1px, transparent 1px);
-    background-size: 1rem 1rem;
-    background-position: center center;
-    position: absolute;
-    z-index: -1;
-    filter: blur(1px);
-}
 
 .white,
 .border,
@@ -366,13 +355,6 @@ body {
     position: relative;
 }
 
-/* #search-icon {
-    position: absolute;
-    left: 20px;
-    top: 15px;
-    margin-top: 10px;
-} */
-
 .book-gallery {
     display: flex;
     flex-wrap: wrap;
@@ -384,7 +366,7 @@ body {
 .book-item {
     position: relative;
     width: 190px;
-    height: 250px; /* Adjusted to allow space for the title */
+    height: 250px; 
     background-color: #000;
     display: flex;
     flex-direction: column;
@@ -409,11 +391,12 @@ body {
 
 .book-title {
     font-size: 16px;
-    margin-top: auto; /* Pushes the title to the bottom of the container */
-    height: 60px; /* Ensures the title box has enough space */
-    overflow: hidden; /* Hides overflow text */
-    text-overflow: ellipsis; /* Adds ellipsis for overflow text */
-    white-space: nowrap; /* Keeps the text on a single line */
+    margin-top: auto; 
+    height: 60px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    
 }
 
 .book-item::before {

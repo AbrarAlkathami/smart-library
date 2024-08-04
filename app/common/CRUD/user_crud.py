@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from common.database.models import User
 from schemas.user import UserSchema
-from middleware.auth import get_password_hash, verify_password
+from middleware.auth import get_password_hash, verify_password,validate_password
 
 def get_user_by_username(db: Session, username: str) -> User:
     return db.query(User).filter(User.username == username).first()
@@ -11,11 +11,14 @@ def create_user(db: Session, user: UserSchema) -> User:
     if db_user:
         raise ValueError("Username already registered")
     
+    # Validate the password
+    validate_password(user.password)
+
     hashed_password = get_password_hash(user.password)
     new_user = User(
         username=user.username,
         password_hash=hashed_password,
-        role="user"  #  default role
+        role="user"  
     )
     db.add(new_user)
     db.commit()
