@@ -70,7 +70,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCurrentPage, setShowPreferen
           </ul>
         </div>
         {error && <div className="error">{error}</div>}
-        <button type="submit">Sign Up</button>
+        <button className ='signin-login-button' type="submit">Sign Up</button>
       </form>
     </div>
   );
