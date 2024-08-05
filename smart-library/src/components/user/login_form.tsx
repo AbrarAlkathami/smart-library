@@ -19,9 +19,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setCurrentPage }) => {
       const data = await loginUser(username, password);
       setToken(data);
       setError('');
-      // Store the token in local storage
       localStorage.setItem('token', data.access_token);
-      // Handle successful login (e.g., navigate to home)
       setCurrentPage('home');
     } catch (err) {
       setError('Invalid username or password. Please try again.');

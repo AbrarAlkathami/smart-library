@@ -13,7 +13,6 @@ const LikedBook: React.FC<{ bookId: number }> = ({ bookId }) => {
   const handleLikeClick = () => {
     setLiked(!liked);
     console.log(`Book ID ${bookId} liked status: ${!liked}`);
-    // Optionally, send the bookId to the server to update the liked status
   };
 
   return (

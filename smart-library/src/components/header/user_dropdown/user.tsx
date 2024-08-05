@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
-import UserIcon from '../../icons/user-icon.tsx'; // Replace with your user icon component
-import './user.css'; // Add styles for the dropdown
+import UserIcon from '../../icons/user-icon.tsx'; 
+import './user.css'; 
 
 type UserDropdownProps = {
   handleShowForm: (form: string) => void;
@@ -15,7 +15,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ handleShowForm }) => {
 
   const handleOptionClick = (option: string) => {
     handleShowForm(option);
-    setDropdownVisible(false); // Close the dropdown after selecting an option
+    setDropdownVisible(false);
   };
 
   return (

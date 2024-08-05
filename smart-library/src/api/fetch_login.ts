@@ -1,4 +1,4 @@
-import { TokenResponse } from '../types/user';
+import { TokenResponse } from '../types/user.ts';
 
 export const loginUser = async (username: string, password: string): Promise<TokenResponse> => {
 

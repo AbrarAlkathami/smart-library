@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SearchIcon= () => (
+const SearchIcon:React.FC = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <mask id="mask0_96_930" mask-type="luminance" maskUnits="userSpaceOnUse" x="2" y="2" width="20" height="20">
       <path fillRule="evenodd" clipRule="evenodd" d="M2 2H21.4768V21.477H2V2Z" fill="white"/>

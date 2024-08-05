@@ -50,7 +50,6 @@ def get_similarity(query_text : str):
     results = collection.query(
         query_texts=[query_text]
     )
-
     return results['metadatas']
 
 def get_similarity_by_column(query_text: str, column: str):

@@ -10,7 +10,7 @@ type IconProps = {
 const AddIcon: React.FC<IconProps> = ({ onClick, size = 21, color = "#41D0C8" }) => (
     <svg
       width={size}
-      height={size * 0.9} // Maintaining the aspect ratio as in the original (21x19)
+      height={size * 0.9}
       viewBox="0 0 21 19"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

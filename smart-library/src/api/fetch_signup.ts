@@ -13,7 +13,6 @@ export const signUpUser = async (username: string, password: string): Promise<Re
   }
 
   const data: RegisterResponse = await response.json();
-  // Save the token to localStorage
   localStorage.setItem('token', data.access_token);
   return data;
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LikeSearchBarIcon = ({ onClick }) => (
+const LikeSearchBarIcon:React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <svg onClick={onClick} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ fill: '#FFE45A', cursor: 'pointer' }}>
     <mask id="mask0_85_10020" style={{ maskType: 'luminance' }} maskUnits="userSpaceOnUse" x="2" y="3" width="21" height="20">
     <path fill-rule="evenodd" clip-rule="evenodd" d="M2 2.99991H22.4725V22.5009H2V2.99991Z" fill="white"/>
