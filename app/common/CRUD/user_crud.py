@@ -11,7 +11,6 @@ def create_user(db: Session, user: UserSchema) -> User:
     if db_user:
         raise ValueError("Username already registered")
     
-    # Validate the password
     validate_password(user.password)
 
     hashed_password = get_password_hash(user.password)

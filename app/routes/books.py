@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from typing import List, Dict
+from typing import List
 from common.database.database import get_db
 from schemas.book import BookSchema
 from middleware.auth import get_current_user, admin_required
@@ -57,15 +57,6 @@ def get_recommended_books_route(db: Session = Depends(get_db), current_user: dic
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     
-@router.post("/toggle-like-book/{book_id}")
-def toggle_like_book_route(book_id: int, username: str, db: Session = Depends(get_db)):
-    result = toggle_like_book(db, username, book_id)
-    return result
-
-@router.get("/liked-books", response_model=List[BookSchema])
-def get_liked_books_route(username: str, db: Session = Depends(get_db)):
-    books = get_liked_books(db, username)
-    return [book_to_dict(book) for book in books]
 
 @router.get("/books/{book_id}", response_model=BookSchema, tags=["Books"], operation_id="get_book_by_id")
 def get_book_route(book_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
@@ -105,10 +96,3 @@ def get_book_similarity(user_query: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No similar books found.")
     # log_user_activity(db, current_user['username'], f"Searched for book with query: {user_query}")
     return {"results": similarity_text_result}
-
-
-# @router.get("/chat")
-# def chat_with_model( question: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-#     answer = retrieve_qa(question)
-#     log_user_activity(db, current_user['username'], f"Asked a question: {question}")
-#     return {"answer": answer}
