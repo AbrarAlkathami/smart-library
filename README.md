@@ -37,6 +37,9 @@ cd smart-bookstore
 ### Install dependencies:
 `
 poetry install
+`
+
+`
 npm install
 `
 
@@ -49,6 +52,9 @@ Create a new database and update the connection details in your FastAPI settings
 ### Run the FastAPI server:
 `
 cd app
+`
+
+`
 uvicorn app.main:app --reload
 `
 
