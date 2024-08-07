@@ -76,8 +76,6 @@ def admin_required(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
-
-
 def validate_password(password: str) -> None:
     if len(password) < 8:
         raise ValueError("Password must be at least 8 characters long")

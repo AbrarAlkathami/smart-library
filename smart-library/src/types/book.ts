@@ -1,7 +1,7 @@
 import { Author } from './author';
 
 export type Book = {
-  id: number;
+  book_id: number;
   title: string;
   authors: Author[];
   published_year: number;
@@ -14,5 +14,11 @@ export type Book = {
 
 export type BookGalleryProps = {
   books: Book[];
-  searchMessage?: string;
+  likedBooks: number[];
+
 }
+
+export type LikedBookProps = {
+  bookId: number;
+  isLiked: boolean;
+};

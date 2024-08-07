@@ -1,0 +1,85 @@
+.searchBar {
+    position: relative;
+    width: 94%;
+    height: 50px;
+    background-color: #172242;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    color: white;
+    border-radius: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-left: 3.5%;
+}
+
+.searchIcon {
+    width: 24px;
+    height: 24px;
+    width: 2.6%;
+    margin-left: 1%;
+    margin-top: 0.4%;
+}
+
+.searchInputContainer {
+    text-align: left;
+    width: 60%;
+    height: 68%;
+    margin-top: 0.3%;
+}
+
+.input {
+    background: #445A9A;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    font-size: 96%;
+    color: white;
+    outline: none;
+    overflow: hidden;
+    padding-left: 10px;
+    border-color: transparent;
+}
+
+.filterIcon {
+    width: 24px;
+    height: 24px;
+    margin-left: 2%;
+    margin-top: 0.5%;
+}
+
+.likeIcon {
+    margin-left: 30%;
+    margin-top: 0.5%;
+}
+
+.dropdownMenuFilter {
+    position: absolute;
+    background-color: #172242;
+    border-radius: 8px;
+    justify-content: space-between;
+    gap: 8px;
+    width: 200px;
+    height: 287px; 
+    margin-top: 1.5%;
+    z-index: 1;
+    background: #172242;
+    font-size: 80%;
+}
+
+.dropdownMostTrending,
+.dropdownMostRecentlyAdded,
+.dropdownRecommended,
+.dropdownMostRecentPublishedYear,
+.dropdownEarliestPublishedYear,
+.dropdownTopRated,
+.dropdownLeastRated {
+    padding: 6% 7%;
+}
+
+.dropdownMenuFilter div:hover {
+    width: 86%;
+    background-color: #445A9A;
+    border-radius: 8px;
+    font-weight: bold;
+}

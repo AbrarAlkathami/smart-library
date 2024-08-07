@@ -1,11 +1,7 @@
 import React from 'react';
-import './header.css';
+import styles from './header.module.css';
 import UserDropdown from './user_dropdown/user.tsx';
-
-type PageHeaderProps = {
-  handleShowForm: (form: string) => void;
-  setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
-};
+import {PageHeaderProps} from '../../types/header.ts'
 
 const PageHeader: React.FC<PageHeaderProps> = ({ handleShowForm, setCurrentPage }) => {
   const handleLibraryClick = () => {
@@ -14,15 +10,15 @@ const PageHeader: React.FC<PageHeaderProps> = ({ handleShowForm, setCurrentPage 
 
   return (
     <div>
-      <div className="page-header">
-        <div className="header-left" onClick={handleLibraryClick} >
+      <div className={styles.pageHeader}>
+        <div className={styles.headerLeft} onClick={handleLibraryClick}>
           Library
         </div>
-        <div className="header-right">
+        <div className={styles.headerRight}>
           <UserDropdown handleShowForm={handleShowForm} />
         </div>
       </div>
-      <div className="div-line"></div>
+      <div className={styles.divLine}></div>
     </div>
   );
 };

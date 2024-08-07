@@ -1,67 +1,57 @@
-import React, { useState } from 'react';
-import './book_card.css';
+import React from 'react';
 import StarIcon from '../icons/star-icon.tsx';
-import LikeIcon from '../icons/like-icon.tsx';
-import LikedIcon from '../icons/liked-icon.tsx';
-import { BookGalleryProps }  from '../../types/book.ts'
+import { Book } from '../../types/book.ts';
+import styles from './book_card.module.css';
+import LikedBook from './liked_book.tsx';
 
-
-
-const LikedBook: React.FC<{ bookId: number }> = ({ bookId }) => {
-  const [liked, setLiked] = useState(false);
-
-  const handleLikeClick = () => {
-    setLiked(!liked);
-    console.log(`Book ID ${bookId} liked status: ${!liked}`);
-  };
-
-  return (
-    <div className='book-like'>
-      {liked ? <LikedIcon onClick={handleLikeClick} /> : <LikeIcon onClick={handleLikeClick} />}
-    </div>
-  );
+type BookGalleryProps = {
+  books: Book[];
+  likedBooks: number[];
 };
 
-const BookGallery: React.FC<BookGalleryProps> = ({ books, searchMessage }) => {
+const BookGallery: React.FC<BookGalleryProps> = ({ books, likedBooks }) => {
+  if (books.length === 0) {
+    return <div>No books available</div>;
+  }
+
   return (
-    <div className='book-gellery-container'>
-    <div className="book-gallery" id="bookGallery">
-      
-      {searchMessage && <div className="search-message">{searchMessage}</div>}
-      {books.map(book => (
-        <div className="book-item" key={book.id}>
-          <div className='title-like-container'>
-            <div className="book-title">{book.title}</div>
-            <LikedBook bookId={book.id} />
-          </div>
-          <div className='book-author-publish-container'>
-            <div className="book-authors">{book.authors.map(author => author.name).join(", ")}</div>
-            <div className="book-published-year">{book.published_year}</div>
-          </div>
-          <div className="cover-photo">
-            <img
-              className="img-photo"
-              src={book.thumbnail && book.thumbnail.trim() !== '' ? book.thumbnail : ""}
-              alt={`${book.title}`}
-            />
-          </div>
-          <div className='book-genre-rating-container'>
-            <div className="book-genre" data-tooltip={book.genre}>{book.genre}</div>
-            <div className="book-average-rating">
-                <div className='star-icon'>
-                    <StarIcon 
-                        avrgRating={(book.average_rating !== null ? book.average_rating : 0) / 6} 
-                    />
+    <div className={styles.bookGalleryContainer}>
+      <div className={styles.bookGallery} id="bookGallery">
+        {books.map(book => (
+          <div className={styles.bookItem} key={book.book_id}>
+            <div className={styles.titleLikeContainer}>
+              <div className={styles.bookTitle}>{book.title}</div>
+              <LikedBook
+                bookId={book.book_id}
+                isLiked={likedBooks.includes(book.book_id)}
+              />
+            </div>
+            <div className={styles.bookAuthorPublishContainer}>
+              <div className={styles.bookAuthors}>{book.authors.map(author => author.name).join(", ")}</div>
+              <div className={styles.bookPublishedYear}>{book.published_year}</div>
+            </div>
+            <div className={styles.coverPhoto}>
+              <img
+                className={styles.imgPhoto}
+                src={book.thumbnail && book.thumbnail.trim() !== '' ? book.thumbnail : ""}
+                alt={`${book.title}`}
+              />
+            </div>
+            <div className={styles.bookGenreRatingContainer}>
+              <div className={styles.bookGenre} data-tooltip={book.genre}>{book.genre}</div>
+              <div className={styles.bookAverageRating}>
+                <div className={styles.starIcon}>
+                  <StarIcon avrgRating={(book.average_rating !== null ? Math.round(book.average_rating) : 0) / 5} />
                 </div>
-                <span className="rating-number">{book.average_rating !== null ? book.average_rating.toFixed(0) : 0}</span>
+                <span className={styles.ratingNumber}>{book.average_rating !== null ? book.average_rating.toFixed(0) : 0}</span>
+              </div>
+            </div>
+            <div className={styles.bookDescription}>
+              {book.description}
             </div>
           </div>
-          <div className='book-description'>
-            {book.description}
-          </div>
-          </div>
-      ))}
-    </div>
+        ))}
+      </div>
     </div>
   );
 };

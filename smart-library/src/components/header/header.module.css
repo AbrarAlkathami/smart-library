@@ -1,0 +1,31 @@
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 110%;
+  padding: 0px 20px 10px 20px;
+  color: #f0f0f0;
+  width: 100%;
+}
+
+.headerLeft {
+  margin-left: 3%;
+  width: 60%;
+  flex-grow: 1;
+  text-align: left;
+  cursor: pointer;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  margin-right: 4.8%;
+}
+
+.divLine {
+  width: 93.7%;
+  margin-left: 3.7%;
+  height: 1px;
+  background: #fafafa;
+  margin-top: 5px;
+}

@@ -17,21 +17,21 @@ def create_preference(preference: UserPreferenceSchema,db: Session = Depends(get
 
 
 @router.get("/preferences", response_model=List[UserPreferenceSchema])
-def read_preferences(
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
-):
+def read_preferences(db: Session = Depends(get_db),current_user: dict = Depends(get_current_user)):
     preferences = get_user_preferences(db, current_user['username'])
     if not preferences:
         raise HTTPException(status_code=404, detail="Preferences not found")
     return preferences
 
 @router.post("/toggle-like-book/{book_id}")
-def toggle_like_book_route(book_id: int, username: str, db: Session = Depends(get_db)):
-    result = toggle_like_book(db, username, book_id)
-    return result
+def toggle_like_book_route(book_id: int, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return toggle_like_book(db, user["username"], book_id)
 
 @router.get("/liked-books", response_model=List[BookSchema])
-def get_liked_books_route(username: str, db: Session = Depends(get_db)):
-    books = get_liked_books(db, username)
+def get_liked_books_route(db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    books = get_liked_books(db, user["username"])
     return [book_to_dict(book) for book in books]

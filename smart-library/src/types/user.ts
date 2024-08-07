@@ -16,3 +16,6 @@ export type RegisterResponse = {
   role: string;    
 };
 
+export type UserDropdownProps = {
+  handleShowForm: (form: string) => void;
+};

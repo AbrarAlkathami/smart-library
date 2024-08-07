@@ -1,15 +1,17 @@
 import React, { useState, ChangeEvent, KeyboardEvent } from 'react';
-import './search_bar.css';
+import styles from './search_bar.module.css';
 import SearchIcon from '../icons/search-icon.tsx';
 import FilterIcon from '../icons/filter-icon.tsx';
 import LikeSearchBarIcon from '../icons/search-bar-like.tsx';
+import { Book } from '../../types/book.ts';
 
 type SearchBarProps = {
   searchBooks: (query: string) => void;
   filterBooks: (filter: string) => void;
+  fetchLikedBooks: () => Promise<void>;
 };
 
-const SearchBar: React.FC<SearchBarProps> = ({ searchBooks, filterBooks }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ searchBooks, filterBooks, fetchLikedBooks }) => {
   const [query, setQuery] = useState<string>('');
   const [isDropdownVisible, setDropdownVisible] = useState<boolean>(false);
 
@@ -33,42 +35,49 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchBooks, filterBooks }) => {
 
   const handleFilterClick = (filter: string) => {
     filterBooks(filter);
-    setDropdownVisible(false); // Close the dropdown after selecting a filter
+    setDropdownVisible(false);
+  };
+
+  const handleLikedBooksClick = async () => {
+    try {
+      await fetchLikedBooks();
+    } catch (error) {
+      console.error("Error fetching liked books:", error);
+      window.alert("Error fetching liked books: " + (error as Error).message);
+    }
   };
 
   return (
-    <div className="search-bar" id="poda">
-      <div className="search-icon" onClick={handleSearchClick}>
+    <div className={styles.searchBar}>
+      <div className={styles.searchIcon} onClick={handleSearchClick}>
         <SearchIcon />
       </div>
-      <div className='search-input-container'>
+      <div className={styles.searchInputContainer}>
         <input
           placeholder="Type book title"
           type="text"
-          name="text"
-          className="input"
-          id="searchInput"
+          className={styles.input}
           value={query}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
         />
       </div>
-      <div className="filter-icon" onClick={toggleDropdown}>
+      <div className={styles.filterIcon} onClick={toggleDropdown}>
         <FilterIcon />
         {isDropdownVisible && (
-          <div className="dropdown-menu-filter">
-            <div className="dropdown-most-trending" onClick={() => handleFilterClick('mostTrending')}>Most Trending</div>
-            <div className="dropdown-most-recently-added" onClick={() => handleFilterClick('recentlyAdded')}>Most Recently Added</div>
-            <div className="dropdown-recommended" onClick={() => handleFilterClick('recommended')}>Recommended</div>
-            <div className="dropdown-most-recent-published-year" onClick={() => handleFilterClick('recentPublishedYear')}>Most Recent Published Year</div>
-            <div className="dropdown-earliest-published-year" onClick={() => handleFilterClick('earliestPublishedYear')}>Earliest Published Year</div>
-            <div className="dropdown-top-rated" onClick={() => handleFilterClick('topRated')}>Top Rated</div>
-            <div className="dropdown-least-rated" onClick={() => handleFilterClick('leastRated')}>Least Rated</div>
+          <div className={styles.dropdownMenuFilter}>
+            <div className={styles.dropdownMostTrending} onClick={() => handleFilterClick('mostTrending')}>Most Trending</div>
+            <div className={styles.dropdownMostRecentlyAdded} onClick={() => handleFilterClick('recentlyAdded')}>Most Recently Added</div>
+            <div className={styles.dropdownRecommended} onClick={() => handleFilterClick('recommended')}>Recommended</div>
+            <div className={styles.dropdownMostRecentPublishedYear} onClick={() => handleFilterClick('recentPublishedYear')}>Most Recent Published Year</div>
+            <div className={styles.dropdownEarliestPublishedYear} onClick={() => handleFilterClick('earliestPublishedYear')}>Earliest Published Year</div>
+            <div className={styles.dropdownTopRated} onClick={() => handleFilterClick('topRated')}>Top Rated</div>
+            <div className={styles.dropdownLeastRated} onClick={() => handleFilterClick('leastRated')}>Least Rated</div>
           </div>
         )}
       </div>
-      <div className="like-icon">
-        <LikeSearchBarIcon onClick={handleSearchClick} />
+      <div className={styles.likeIcon}>
+        <LikeSearchBarIcon onClick={handleLikedBooksClick} />
       </div>
     </div>
   );

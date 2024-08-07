@@ -1,48 +1,45 @@
-import React, {useState} from 'react';
-import { sendMessageToChatBot } from '../../api/chat.ts';
-import './chatbot.css'; 
+import React, { useState } from 'react';
+import { sendMessageToChatBot } from '../../services/chat.ts';
+import styles from './chatbot.module.css'; 
+import {Message} from '../../types/message.ts'
 
-type Message = {
-    text: string;
-    sender: 'user' | 'bot';
+
+const ChatBotWindow: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState<string>('');
+
+  const handleSend = async () => {
+    if (input.trim()) {
+      const newMessage: Message = { text: input, sender: 'user' };
+      setMessages([...messages, newMessage]);
+      setInput('');
+
+      try {
+        const data = await sendMessageToChatBot('your_session_id', input); 
+        const botResponse: Message = { text: data.response, sender: 'bot' };
+        setMessages((prevMessages) => [...prevMessages, botResponse]);
+      } catch (error) {
+        console.error('Error:', error);
+        const errorResponse: Message = { text: 'Sorry, something went wrong.', sender: 'bot' };
+        setMessages((prevMessages) => [...prevMessages, errorResponse]);
+      }
+    }
   };
-  
-  const ChatBotWindow: React.FC = () => {
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [input, setInput] = useState<string>('');
-  
-    const handleSend = async () => {
-      if (input.trim()) {
-        const newMessage: Message = { text: input, sender: 'user' };
-        setMessages([...messages, newMessage]);
-        setInput('');
-  
-        try {
-          const data = await sendMessageToChatBot('your_session_id', input); // replace with actual session id
-          const botResponse: Message = { text: data.response, sender: 'bot' };
-          setMessages((prevMessages) => [...prevMessages, botResponse]);
-        } catch (error) {
-          console.error('Error:', error);
-          const errorResponse: Message = { text: 'Sorry, something went wrong.', sender: 'bot' };
-          setMessages((prevMessages) => [...prevMessages, errorResponse]);
-        }
-      }
-    };
-  
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === 'Enter') {
-        handleSend();
-      }
-    };
-  
-    return (
-      <div className="chatbot-window">
-        AI ChatBot
-        <div className='chatbot-container'>
-        <div className="chatbot-content">
-          <div className="messages">
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSend();
+    }
+  };
+
+  return (
+    <div className={styles.chatbotWindow}>
+      AI ChatBot
+      <div className={styles.chatbotContainer}>
+        <div className={styles.chatbotContent}>
+          <div className={styles.messages}>
             {messages.map((message, index) => (
-              <div key={index} className={`message ${message.sender}`}>
+              <div key={index} className={`${styles.message} ${message.sender === 'user' ? styles.messageUser : styles.messageBot}`}>
                 {message.text}
               </div>
             ))}
@@ -50,7 +47,7 @@ type Message = {
         </div>
         <input
           type="text"
-          className="query"
+          className={styles.query}
           id="query"
           name="query"
           placeholder="Insert text"
@@ -58,9 +55,9 @@ type Message = {
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        </div>
       </div>
-    );
-  };
-  
-  export default ChatBotWindow;
+    </div>
+  );
+};
+
+export default ChatBotWindow;

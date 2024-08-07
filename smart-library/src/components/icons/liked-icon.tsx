@@ -1,4 +1,3 @@
-// LikedIcon.tsx
 import React from 'react';
 
 const LikedIcon:React.FC<{ onClick: () => void }>  = ({ onClick }) => (

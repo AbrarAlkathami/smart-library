@@ -1,0 +1,22 @@
+.formContainer {
+  width: 651px;
+  height: 50%;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 5%;
+  background-color: #172242;
+  color: #FFFFFF;
+  position: relative;
+  align-items: center;
+  align-self: center;
+}
+
+.lineDiv {
+  width: 93.7%;
+  margin-left: 3.7%;
+  height: 1px;
+  background: #FAFAFA;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}

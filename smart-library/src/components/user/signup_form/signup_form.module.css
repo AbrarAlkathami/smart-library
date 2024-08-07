@@ -1,0 +1,96 @@
+.formContainerSignup {
+    width: 600px;
+    height: 50%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 5%;
+    color: #FFFFFF;
+  }
+  
+  .loginSignupName {
+    font-size: 20px;
+    margin-bottom: 3%;
+    margin-top: 3%;
+    text-align: center;
+  }
+  
+  .success {
+    color: green;
+    margin: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .error {
+    color: red;
+    margin: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .formGroup {
+    color: #AFB1B6;
+    margin-bottom: 15px;
+    margin-left: 4%;
+  }
+  
+  .formGroup label {
+    font-size: 14px;
+    display: block;
+    background-color: transparent;
+    border: none;
+    width: 544px;
+    margin-bottom: 1.5%;
+  }
+  
+  .formGroup input {
+    width: 99%;
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border-color: #AFB1B6;
+    color: #FAFAFA;
+    border-style: ridge;
+    background-color: transparent;
+    margin-bottom: 4%;
+    height: 45px;
+  }
+  
+  button {
+    width: 20%;
+    text-align: center;
+    padding: 10px;
+    background-color: #41D0C8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 5%;
+    margin-top: 1%;
+  }
+  
+  button:hover {
+    background-color: #445A9A;
+  }
+  
+  .passwordInstructions {
+    margin: 4% 6% 0% 7%;
+    color: #61646B;
+    font-size: 16px;
+  }
+  
+  .passwordInstructions ul {
+    list-style: none;
+    padding-left: 20px;
+  }
+  
+  .passwordInstructions li {
+    padding-bottom: 5px;
+    color: #61646B;
+  }
+  
+  .passwordInstructions li.valid {
+    color: green;
+  }
+  

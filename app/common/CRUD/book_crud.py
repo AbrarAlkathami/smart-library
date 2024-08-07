@@ -11,8 +11,10 @@ from sqlalchemy import case
 from datetime import datetime
 
 
+
 def book_to_dict(book):
     return {
+        "book_id": book.book_id,
         "title": book.title,
         "subtitle": book.subtitle,
         "published_year": book.published_year,
@@ -32,17 +34,17 @@ def author_to_dict(author):
     }
 
 
-def get_books(db: Session)-> List[dict]:
+def get_books(db: Session)-> List[BookResponseSchema]:
     return db.query(Book).options(joinedload(Book.authors)).all()
 
-def get_book_by_id(db: Session, book_id: int) -> BookSchema:
+def get_book_by_id(db: Session, book_id: int) -> BookResponseSchema:
     return db.query(Book).filter(Book.book_id == book_id).first()
 
 #delete this function( not working + in the search for a book I'm using search_books function), oh it's used with associate_book_with_author
-def get_book_by_title(db: Session, title: str) -> BookSchema:
+def get_book_by_title(db: Session, title: str) -> BookResponseSchema:
     book = db.query(Book).filter(Book.title.ilike(f"%{title}%")).first()
     if book:
-        return BookSchema.from_orm(book)
+        return BookResponseSchema.model_validate(book)
     return None
 
 def search_books(db: Session, query: str) -> List[dict]:
@@ -233,25 +235,3 @@ def associate_book_with_author(db: Session, book_title: str, author_name: str):
         db.rollback()
         raise e
     
-def toggle_like_book(db: Session, username: str, book_id: int):
-
-    liked_book = db.query(UserPreference).filter_by(username=username, preference_type='liked_book', preference_value=str(book_id)).first()
-    if liked_book:
-        db.delete(liked_book)
-        db.commit()
-        return {"message": "Book unliked successfully"}
-    else:
-        try:
-            new_like = UserPreference(username=username, preference_type='liked_book', preference_value=str(book_id))
-            db.add(new_like)
-            db.commit()
-            return {"message": "Book liked successfully"}
-        except IntegrityError:
-            db.rollback()
-            return {"message": "Failed to like the book"}
-
-def get_liked_books(db: Session, username: str) -> List[Book]:
-    liked_book_ids = db.query(UserPreference.preference_value).filter_by(username=username, preference_type='liked_book').all()
-    liked_book_ids = [int(id[0]) for id in liked_book_ids]  # Convert list of tuples to list of ints
-    liked_books = db.query(Book).filter(Book.book_id.in_(liked_book_ids)).all()
-    return liked_books
