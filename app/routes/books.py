@@ -7,7 +7,6 @@ from middleware.auth import get_current_user, admin_required
 from middleware.logger import log_user_activity
 from common.CRUD.book_crud import *
 from common.database.chromaDB import*
-from services.ollama_model import *
 
 
 router = APIRouter()

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { sendMessageToChatBot } from '../../services/chat.ts';
 import styles from './chatbot.module.css'; 
-import {Message} from '../../types/message.ts'
-
+import { Message } from '../../types/message.ts';
 
 const ChatBotWindow: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -39,8 +38,15 @@ const ChatBotWindow: React.FC = () => {
         <div className={styles.chatbotContent}>
           <div className={styles.messages}>
             {messages.map((message, index) => (
-              <div key={index} className={`${styles.message} ${message.sender === 'user' ? styles.messageUser : styles.messageBot}`}>
-                {message.text}
+              <div 
+                key={index} 
+                className={`${styles.message} ${message.sender === 'user' ? styles.messageUser : styles.messageBot}`}
+              >
+                {message.sender === 'bot' ? (
+                  <div dangerouslySetInnerHTML={{ __html: message.text }} />
+                ) : (
+                  <div>{message.text}</div>
+                )}
               </div>
             ))}
           </div>

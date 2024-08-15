@@ -4,10 +4,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from routes import users, books, authors ,preferences
 from common.database.database import *
-from services.ollama_model import *
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from services.graph import langgraph
+from fastapi.responses import StreamingResponse
 
 app = FastAPI()
 
@@ -31,7 +32,6 @@ templates = Jinja2Templates(directory="frontend")
 
 class ChatRequest(BaseModel):
     query: str
-    session_id: str
 
 @app.get("/", response_class=HTMLResponse)
 async def read_books(request: Request):
@@ -44,7 +44,7 @@ def health_check():
 @app.post("/chat")
 def chat_with_model(request: ChatRequest, db: Session = Depends(get_db)):
     try:
-        response = generate_response_intent(db, request.session_id, request.query)
+        response = langgraph(request.query)
         return {"response": response}
     except Exception as e:
         print(f"Error: {e}")
