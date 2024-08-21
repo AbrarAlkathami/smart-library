@@ -107,4 +107,4 @@ npm start
 <img width="1512" alt="Screenshot 1446-02-16 at 5 29 38 PM" src="https://github.com/user-attachments/assets/c10fa8f0-4e99-47da-8bce-fdbb56bd15c3">
 
 ### AI ChatBot
-<img width="1512" alt="Screenshot 1446-02-16 at 5 31 15 PM" src="https://github.com/user-attachments/assets/9cb211cb-7a4d-4b82-9b6b-ae3fa562f7ec"># smart-library
+<img width="1512" alt="Screenshot 1446-02-16 at 5 31 15 PM" src="https://github.com/user-attachments/assets/9cb211cb-7a4d-4b82-9b6b-ae3fa562f7ec">
