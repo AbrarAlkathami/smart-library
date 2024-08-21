@@ -71,6 +71,7 @@ uvicorn app:app --reload
 
 ### Run the react:
 Open new terminal.
+
 `
 cd smart-library
 npm start
