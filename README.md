@@ -14,10 +14,10 @@ Smart Library is a web application that allows users to browse, search, and inte
   - Dynamic Book Display: The application dynamically loads and displays books based on user interactions, including filtering options.
       
   ### AI Chatbot:
-    - Display Relevant Books: Shows a list of books relevant to the user's query.
-    - Book Summary: Provides a summary of any book in the database.
-    - Book Information: Fetches detailed information about a specific book.
-    - Books Recommendation: Shows a list of recommended books based on the user query.
+  - Display Relevant Books: Shows a list of books relevant to the user's query.
+  - Book Summary: Provides a summary of any book in the database.
+  - Book Information: Fetches detailed information about a specific book.
+  - Books Recommendation: Shows a list of recommended books based on the user query.
 
 ## Technologies Used
 - Backend:
