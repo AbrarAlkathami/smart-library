@@ -5,19 +5,19 @@ Smart Library is a web application that allows users to browse, search, and inte
 
 ## Features
 
-### Book Library:
-  - User Authentication: Users can sign up and log in securely.
-  - Book Search & Filter: Search for books by title and filter results based on various criteria like publication year, rating, etc.
-  - Personalized Recommendations: Users can set preferences for authors and genres to receive tailored recommendations.
-  - AI Chatbot: A chatbot interface is available to assist users with finding books and general inquiries.
-  - Book Rating: Users can view the rating average for books.
-  - Dynamic Book Display: The application dynamically loads and displays books based on user interactions, including filtering options.
-    
-### AI Chatbot:
-  - Display Relevant Books: Shows a list of books relevant to the user's query.
-  - Book Summary: Provides a summary of any book in the database.
-  - Book Information: Fetches detailed information about a specific book.
-  - Books Recommendation: Shows a list of recommended books based on the user query.
+  ### Book Library:
+    - User Authentication: Users can sign up and log in securely.
+    - Book Search & Filter: Search for books by title and filter results based on various criteria like publication year, rating, etc.
+    - Personalized Recommendations: Users can set preferences for authors and genres to receive tailored recommendations.
+    - AI Chatbot: A chatbot interface is available to assist users with finding books and general inquiries.
+    - Book Rating: Users can view the rating average for books.
+    - Dynamic Book Display: The application dynamically loads and displays books based on user interactions, including filtering options.
+      
+  ### AI Chatbot:
+    - Display Relevant Books: Shows a list of books relevant to the user's query.
+    - Book Summary: Provides a summary of any book in the database.
+    - Book Information: Fetches detailed information about a specific book.
+    - Books Recommendation: Shows a list of recommended books based on the user query.
 
 ## Technologies Used
 - Backend:
