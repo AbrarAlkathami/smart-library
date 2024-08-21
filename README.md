@@ -70,7 +70,7 @@ uvicorn app:app --reload
 `
 
 ### Run the react:
-Open new terminal.
+In new terminal.
 
 `
 cd smart-library
